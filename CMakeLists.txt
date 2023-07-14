@@ -21,7 +21,7 @@ include(FeatureSummary) # More verbose Output for libraries using set_package_pr
 
 # Look for supporting libraries
 # -----------------------------
-find_package(Eigen3 NO_MODULE REQUIRED)
+find_package(Eigen3 NO_MODULE REQUIRED timer)
 set_package_properties(Eigen3 PROPERTIES TYPE REQUIRED PURPOSE "C++ vector data structures")
 message(STATUS "Found Eigen3 Version: ${Eigen3_VERSION} Path: ${Eigen3_DIR}")
 
@@ -36,7 +36,7 @@ target_include_directories(
     $<INSTALL_INTERFACE:include>
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
 )
-target_link_libraries(Spectra INTERFACE Eigen3::Eigen Boost::headers)
+target_link_libraries(Spectra INTERFACE Eigen3::Eigen Boost::headers Boost::timer)
 
 # Parse additional options
 # ------------------------

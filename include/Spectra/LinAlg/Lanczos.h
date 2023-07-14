@@ -12,7 +12,7 @@
 #include <stdexcept>  // std::invalid_argument
 #include <utility>    // std::forward
 
-#include <boost/progress.hpp>
+#include <boost/timer/progress_display.hpp>
 
 #include "Arnoldi.h"
 
