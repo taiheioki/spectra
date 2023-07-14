@@ -42,7 +42,7 @@ struct TypeTraits
     }
     static Scalar (min)()
     {
-        return epsilon() * epsilon() * epsilon();
+        return std::numeric_limits<Scalar>::min();
     }
 };
 
