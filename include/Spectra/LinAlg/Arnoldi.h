@@ -9,14 +9,14 @@
 
 #include <Eigen/Core>
 #include <cmath>      // std::sqrt
-#include <utility>    // std::move
 #include <stdexcept>  // std::invalid_argument
+#include <utility>    // std::move
 
 #include "../MatOp/internal/ArnoldiOp.h"
-#include "../Util/TypeTraits.h"
 #include "../Util/SimpleRandom.h"
-#include "UpperHessenbergQR.h"
+#include "../Util/TypeTraits.h"
 #include "DoubleShiftQR.h"
+#include "UpperHessenbergQR.h"
 
 namespace Spectra {
 
@@ -41,9 +41,9 @@ private:
 protected:
     // A very small value, but 1.0 / m_near_0 does not overflow
     // ~= 1e-307 for the "double" type
-    static constexpr Scalar m_near_0 = TypeTraits<Scalar>::min() * Scalar(10);
+    const Scalar m_near_0 = TypeTraits<Scalar>::min() * Scalar(10);
     // The machine precision, ~= 1e-16 for the "double" type
-    static constexpr Scalar m_eps = TypeTraits<Scalar>::epsilon();
+    const Scalar m_eps = TypeTraits<Scalar>::epsilon();
 
     ArnoldiOpType m_op;  // Operators for the Arnoldi factorization
     const Index m_n;     // dimension of A

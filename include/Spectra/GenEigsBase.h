@@ -8,22 +8,22 @@
 #define SPECTRA_GEN_EIGS_BASE_H
 
 #include <Eigen/Core>
-#include <vector>     // std::vector
-#include <cmath>      // std::abs, std::pow, std::sqrt
 #include <algorithm>  // std::min, std::copy
+#include <cmath>      // std::abs, std::pow, std::sqrt
 #include <complex>    // std::complex, std::conj, std::norm, std::abs
 #include <stdexcept>  // std::invalid_argument
+#include <vector>     // std::vector
 
-#include "Util/Version.h"
-#include "Util/TypeTraits.h"
-#include "Util/SelectionRule.h"
-#include "Util/CompInfo.h"
-#include "Util/SimpleRandom.h"
-#include "MatOp/internal/ArnoldiOp.h"
-#include "LinAlg/UpperHessenbergQR.h"
+#include "LinAlg/Arnoldi.h"
 #include "LinAlg/DoubleShiftQR.h"
 #include "LinAlg/UpperHessenbergEigen.h"
-#include "LinAlg/Arnoldi.h"
+#include "LinAlg/UpperHessenbergQR.h"
+#include "MatOp/internal/ArnoldiOp.h"
+#include "Util/CompInfo.h"
+#include "Util/SelectionRule.h"
+#include "Util/SimpleRandom.h"
+#include "Util/TypeTraits.h"
+#include "Util/Version.h"
 
 namespace Spectra {
 
@@ -143,7 +143,7 @@ private:
         using std::pow;
 
         // The machine precision, ~= 1e-16 for the "double" type
-        constexpr Scalar eps = TypeTraits<Scalar>::epsilon();
+        const Scalar eps = TypeTraits<Scalar>::epsilon();
         // std::pow() is not constexpr, so we do not declare eps23 to be constexpr
         // But most compilers should be able to compute eps23 at compile time
         const Scalar eps23 = pow(eps, Scalar(2) / 3);
@@ -164,7 +164,7 @@ private:
 
         // A very small value, but 1.0 / near_0 does not overflow
         // ~= 1e-307 for the "double" type
-        constexpr Scalar near_0 = TypeTraits<Scalar>::min() * Scalar(10);
+        const Scalar near_0 = TypeTraits<Scalar>::min() * Scalar(10);
 
         Index nev_new = m_nev;
         for (Index i = m_nev; i < m_ncv; i++)

@@ -10,8 +10,8 @@
 #include <Eigen/Core>
 
 #include "GenEigsBase.h"
-#include "Util/SelectionRule.h"
 #include "MatOp/DenseGenComplexShiftSolve.h"
+#include "Util/SelectionRule.h"
 
 namespace Spectra {
 
@@ -83,7 +83,7 @@ private:
 
         // Calculate inv(A - r * I) * vj
         Vector v_real(m_n), v_imag(m_n), OPv_real(m_n), OPv_imag(m_n);
-        constexpr Scalar eps = TypeTraits<Scalar>::epsilon();
+        const Scalar eps = TypeTraits<Scalar>::epsilon();
         for (Index i = 0; i < m_nev; i++)
         {
             v_real.noalias() = m_fac.matrix_V() * m_ritz_vec.col(i).real();

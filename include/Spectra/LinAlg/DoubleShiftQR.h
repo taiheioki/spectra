@@ -8,11 +8,11 @@
 #define SPECTRA_DOUBLE_SHIFT_QR_H
 
 #include <Eigen/Core>
-#include <vector>     // std::vector
 #include <algorithm>  // std::min, std::fill, std::copy
-#include <utility>    // std::swap
 #include <cmath>      // std::abs, std::sqrt, std::pow
 #include <stdexcept>  // std::invalid_argument, std::logic_error
+#include <utility>    // std::swap
+#include <vector>     // std::vector
 
 #include "../Util/TypeTraits.h"
 
@@ -33,9 +33,9 @@ private:
 
     // A very small value, but 1.0 / m_near_0 does not overflow
     // ~= 1e-307 for the "double" type
-    static constexpr Scalar m_near_0 = TypeTraits<Scalar>::min() * Scalar(10);
+    const Scalar m_near_0 = TypeTraits<Scalar>::min() * Scalar(10);
     // The machine precision, ~= 1e-16 for the "double" type
-    static constexpr Scalar m_eps = TypeTraits<Scalar>::epsilon();
+    const Scalar m_eps = TypeTraits<Scalar>::epsilon();
 
     Index m_n;          // Dimension of the matrix
     Matrix m_mat_H;     // A copy of the matrix to be factorized
@@ -349,7 +349,7 @@ public:
         // Obtain the indices of zero elements in the subdiagonal,
         // so that H can be divided into several blocks
         const Scalar eps_abs = m_near_0 * (m_n / m_eps);
-        constexpr Scalar eps_rel = m_eps;
+        const Scalar eps_rel = m_eps;
         std::vector<int> zero_ind;
         zero_ind.reserve(m_n - 1);
         zero_ind.push_back(0);
