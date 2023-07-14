@@ -373,6 +373,10 @@ public:
         m_niter += i + 1;
         m_info = (nconv >= m_nev) ? CompInfo::Successful : CompInfo::NotConverging;
 
+        std::cout << "Finished. " << (std::min)(m_nev, nconv) << " eigenvalues converged after "
+                  << m_niter << " iterations.\n"
+                  << std::endl;
+
         return (std::min)(m_nev, nconv);
     }
 
