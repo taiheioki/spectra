@@ -79,7 +79,7 @@ public:
         m_fac_H.rightCols(m_m - from_k).setZero();
         m_fac_H.block(from_k, 0, m_m - from_k, from_k).setZero();
 
-        boost::progress_display progress(to_m - from_k, std::cout, "\nLanczos factorization: ", "\n");
+        boost::timer::progress_display progress(to_m - from_k, std::cout, "\nLanczos factorization: ", "\n");
 
         for (Index i = from_k; i <= to_m - 1; i++)
         {
