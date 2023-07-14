@@ -36,11 +36,11 @@ namespace Spectra {
 template <typename Scalar>
 struct TypeTraits
 {
-    const Scalar epsilon()
+    static Scalar epsilon()
     {
         return Eigen::numext::numeric_limits<Scalar>::epsilon();
     }
-    const Scalar (min)()
+    static Scalar (min)()
     {
         return epsilon() * epsilon() * epsilon();
     }
@@ -50,11 +50,11 @@ struct TypeTraits
 template <>
 struct TypeTraits<float>
 {
-    const float epsilon()
+    static float epsilon()
     {
         return std::numeric_limits<float>::epsilon();
     }
-    const float (min)()
+    static float (min)()
     {
         return (std::numeric_limits<float>::min)();
     }
@@ -76,11 +76,11 @@ struct TypeTraits<double>
 template <>
 struct TypeTraits<long double>
 {
-    const long double epsilon()
+    static long double epsilon()
     {
         return std::numeric_limits<long double>::epsilon();
     }
-    const long double (min)()
+    static constexpr long double (min)()
     {
         return (std::numeric_limits<long double>::min)();
     }
