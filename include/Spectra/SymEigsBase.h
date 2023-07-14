@@ -14,6 +14,8 @@
 #include <utility>    // std::move
 #include <vector>     // std::vector
 
+#include <boost/timer/progress_display.hpp>
+
 #include "LinAlg/Lanczos.h"
 #include "LinAlg/TridiagEigen.h"
 #include "LinAlg/UpperHessenbergQR.h"
@@ -107,6 +109,9 @@ private:
         Vector shifts = m_ritz_val.tail(nshift);
         std::sort(shifts.data(), shifts.data() + nshift, [](const Scalar& v1, const Scalar& v2) { return abs(v1) > abs(v2); });
 
+        std::cout << "Restarting Lanczos factorization with " << nshift << " shifts." << std::endl;
+        boost::timer::progress_display progress(nshift);
+
         for (Index i = 0; i < nshift; i++)
         {
             // QR decomposition of H-mu*I, mu is the shift
@@ -118,6 +123,8 @@ private:
             // Since QR = H - mu * I, we have H = QR + mu * I
             // and therefore Q'HQ = RQ + mu * I
             m_fac.compress_H(decomp);
+
+            ++progress;
         }
 
         m_fac.compress_V(Q);
