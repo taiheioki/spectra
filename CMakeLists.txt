@@ -36,7 +36,7 @@ target_include_directories(
     $<INSTALL_INTERFACE:include>
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
 )
-target_link_libraries(Spectra INTERFACE Eigen3::Eigen Boost::program_options)
+target_link_libraries(Spectra INTERFACE Eigen3::Eigen Boost::headers Boost::program_options)
 
 # Parse additional options
 # ------------------------
