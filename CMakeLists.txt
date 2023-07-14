@@ -1,5 +1,5 @@
-cmake_minimum_required (VERSION 3.5 FATAL_ERROR)
-project (Spectra VERSION 1.0.1 LANGUAGES CXX)
+cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
+project(Spectra VERSION 1.0.1 LANGUAGES CXX)
 
 # Make CMake look into the ./cmake/ folder for configuration files
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
@@ -25,6 +25,8 @@ find_package(Eigen3 NO_MODULE REQUIRED)
 set_package_properties(Eigen3 PROPERTIES TYPE REQUIRED PURPOSE "C++ vector data structures")
 message(STATUS "Found Eigen3 Version: ${Eigen3_VERSION} Path: ${Eigen3_DIR}")
 
+find_package(Boost 1.7 REQUIRED COMPONENTS program_options)
+
 # Setup library
 # -------------
 add_library(Spectra INTERFACE)
@@ -34,7 +36,7 @@ target_include_directories(
     $<INSTALL_INTERFACE:include>
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
 )
-target_link_libraries(Spectra INTERFACE Eigen3::Eigen)
+target_link_libraries(Spectra INTERFACE Eigen3::Eigen Boost::program_options)
 
 # Parse additional options
 # ------------------------
@@ -92,12 +94,13 @@ write_basic_package_version_file(
 
 install(
     FILES
-        ${CMAKE_BINARY_DIR}/cmake/spectra-config.cmake
-        ${CMAKE_BINARY_DIR}/cmake/spectra-config-version.cmake
+    ${CMAKE_BINARY_DIR}/cmake/spectra-config.cmake
+    ${CMAKE_BINARY_DIR}/cmake/spectra-config-version.cmake
     DESTINATION share/spectra/cmake
 )
 
 find_package(CLANG_FORMAT 9)
+
 if(CLANG_FORMAT_FOUND)
     file(GLOB_RECURSE FORMAT_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp ${CMAKE_CURRENT_SOURCE_DIR}/*.h)
     add_custom_target(
@@ -107,8 +110,5 @@ if(CLANG_FORMAT_FOUND)
     )
 endif()
 
-
-
 # Print out summary of all detected packages
 feature_summary(INCLUDE_QUIET_PACKAGES WHAT ALL)
-

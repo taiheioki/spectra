@@ -9,8 +9,10 @@
 
 #include <Eigen/Core>
 #include <cmath>      // std::sqrt
-#include <utility>    // std::forward
 #include <stdexcept>  // std::invalid_argument
+#include <utility>    // std::forward
+
+#include <boost/progress.hpp>
 
 #include "Arnoldi.h"
 
@@ -76,6 +78,8 @@ public:
         // Keep the upperleft k x k submatrix of H and set other elements to 0
         m_fac_H.rightCols(m_m - from_k).setZero();
         m_fac_H.block(from_k, 0, m_m - from_k, from_k).setZero();
+
+        boost::progress_display progress(to_m - from_k, std::cout, "\nLanczos factorization: ", "\n");
 
         for (Index i = from_k; i <= to_m - 1; i++)
         {
@@ -151,6 +155,8 @@ public:
                 ortho_err = Vf.head(i1).cwiseAbs().maxCoeff();
                 count++;
             }
+
+            ++progress;
         }
 
         // Indicate that this is a step-m factorization

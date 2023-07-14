@@ -339,12 +339,18 @@ public:
                   Scalar tol = 1e-10, SortRule sorting = SortRule::LargestAlge)
     {
         // The m-step Lanczos factorization
+        std::cout << "Begin factorize_from" << std::endl;
         m_fac.factorize_from(1, m_ncv, m_nmatop);
+
+        std::cout << "Begin retrieve_ritzpair" << std::endl;
         retrieve_ritzpair(selection);
+
         // Restarting
+        std::cout << "Begin restarting" << std::endl;
         Index i, nconv = 0, nev_adj;
         for (i = 0; i < maxit; i++)
         {
+            std::cout << i << "th iteration" << std::endl;
             nconv = num_converged(tol);
             if (nconv >= m_nev)
                 break;
@@ -352,7 +358,9 @@ public:
             nev_adj = nev_adjusted(nconv);
             restart(nev_adj, selection);
         }
+
         // Sorting results
+        std::cout << "Begin sort_ritzpair" << std::endl;
         sort_ritzpair(sorting);
 
         m_niter += i + 1;
