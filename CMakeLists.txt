@@ -25,7 +25,7 @@ find_package(Eigen3 NO_MODULE REQUIRED)
 set_package_properties(Eigen3 PROPERTIES TYPE REQUIRED PURPOSE "C++ vector data structures")
 message(STATUS "Found Eigen3 Version: ${Eigen3_VERSION} Path: ${Eigen3_DIR}")
 
-find_package(Boost 1.7 REQUIRED COMPONENTS program_options)
+find_package(Boost 1.7 REQUIRED)
 
 # Setup library
 # -------------
@@ -36,7 +36,7 @@ target_include_directories(
     $<INSTALL_INTERFACE:include>
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
 )
-target_link_libraries(Spectra INTERFACE Eigen3::Eigen Boost::headers Boost::program_options)
+target_link_libraries(Spectra INTERFACE Eigen3::Eigen Boost::headers)
 
 # Parse additional options
 # ------------------------
