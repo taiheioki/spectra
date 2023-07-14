@@ -33,9 +33,9 @@ private:
 
     // A very small value, but 1.0 / m_near_0 does not overflow
     // ~= 1e-307 for the "double" type
-    const Scalar m_near_0 = TypeTraits<Scalar>::min() * Scalar(10);
+    const static Scalar m_near_0 = TypeTraits<Scalar>::min() * Scalar(10);
     // The machine precision, ~= 1e-16 for the "double" type
-    const Scalar m_eps = TypeTraits<Scalar>::epsilon();
+    const static Scalar m_eps = TypeTraits<Scalar>::epsilon();
 
     Index m_n;          // Dimension of the matrix
     Matrix m_mat_H;     // A copy of the matrix to be factorized
