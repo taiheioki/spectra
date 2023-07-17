@@ -15,6 +15,8 @@
 #include <Eigen/Jacobi>
 #include <stdexcept>
 
+#include <boost/timer/progress_display.hpp>
+
 #include "../Util/TypeTraits.h"
 
 namespace Spectra {
@@ -160,6 +162,8 @@ public:
         const Scalar considerAsZero = TypeTraits<Scalar>::min();
         const Scalar precision_inv = Scalar(1) / Eigen::NumTraits<Scalar>::epsilon();
 
+        boost::timer::progress_display progress(end);
+
         while (end > 0)
         {
             for (Index i = start; i < end; i++)
@@ -177,8 +181,10 @@ public:
             }
 
             // find the largest unreduced block at the end of the matrix.
-            while (end > 0 && subdiag[end - 1] == Scalar(0))
+            while (end > 0 && subdiag[end - 1] == Scalar(0)){
                 end--;
+                ++progress;
+            }
 
             if (end <= 0)
                 break;
