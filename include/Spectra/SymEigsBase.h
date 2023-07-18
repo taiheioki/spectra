@@ -442,6 +442,8 @@ public:
         if (!nvec)
             return res;
 
+        std::cout << "Computing `ritz_vec_conv`" << std::endl;
+        boost::timer::progress_display progress(nvec);
         Matrix ritz_vec_conv(m_ncv, nvec);
         Index j = 0;
         for (Index i = 0; i < m_nev && j < nvec; i++)
@@ -450,9 +452,11 @@ public:
             {
                 ritz_vec_conv.col(j).noalias() = m_ritz_vec.col(i);
                 j++;
+                ++progress;
             }
         }
 
+        std::cout << "Multiplying `V` and `ritz_vec_conv`" << std::endl;
         res.noalias() = m_fac.matrix_V() * ritz_vec_conv;
 
         return res;
