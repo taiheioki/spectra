@@ -83,6 +83,7 @@ private:
     Vector        m_ritz_est;   // last row of m_ritz_vec, also called the Ritz estimates
     BoolArray     m_ritz_conv;  // indicator of the convergence of Ritz values
     CompInfo      m_info;       // status of the computation
+    bool          display;
     // clang-format on
 
     // Move rvalue object to the container
@@ -109,8 +110,11 @@ private:
         Vector shifts = m_ritz_val.tail(nshift);
         std::sort(shifts.data(), shifts.data() + nshift, [](const Scalar& v1, const Scalar& v2) { return abs(v1) > abs(v2); });
 
-        std::cout << "Restarting Lanczos factorization with " << nshift << " shifts." << std::endl;
-        boost::timer::progress_display progress(nshift);
+        if (display)
+            std::cout << "Restarting Lanczos factorization with " << nshift << " shifts." << std::endl;
+
+        Output out(display);
+        boost::timer::progress_display progress(nshift, out);
 
         for (Index i = 0; i < nshift; i++)
         {
@@ -183,7 +187,8 @@ private:
     // Retrieves and sorts Ritz values and Ritz vectors
     void retrieve_ritzpair(SortRule selection)
     {
-        TridiagEigen<Scalar> decomp(m_fac.matrix_H());
+        Output out(display);
+        TridiagEigen<Scalar> decomp(m_fac.matrix_H(), out);
         const Vector& evals = decomp.eigenvalues();
         const Matrix& evecs = decomp.eigenvectors();
 
@@ -233,15 +238,16 @@ public:
     /// \cond
 
     // If op is an lvalue
-    SymEigsBase(OpType& op, const BOpType& Bop, Index nev, Index ncv) :
+    SymEigsBase(OpType& op, const BOpType& Bop, Index nev, Index ncv, bool display) :
         m_op(op),
         m_n(op.rows()),
         m_nev(nev),
         m_ncv(ncv > m_n ? m_n : ncv),
         m_nmatop(0),
         m_niter(0),
-        m_fac(ArnoldiOpType(op, Bop), m_ncv),
-        m_info(CompInfo::NotComputed)
+        m_fac(ArnoldiOpType(op, Bop), m_ncv, display),
+        m_info(CompInfo::NotComputed),
+        display(display)
     {
         if (nev < 1 || nev > m_n - 1)
             throw std::invalid_argument("nev must satisfy 1 <= nev <= n - 1, n is the size of matrix");
@@ -251,7 +257,7 @@ public:
     }
 
     // If op is an rvalue
-    SymEigsBase(OpType&& op, const BOpType& Bop, Index nev, Index ncv) :
+    SymEigsBase(OpType&& op, const BOpType& Bop, Index nev, Index ncv, bool display) :
         m_op_container(create_op_container(std::move(op))),
         m_op(m_op_container.front()),
         m_n(m_op.rows()),
@@ -260,7 +266,8 @@ public:
         m_nmatop(0),
         m_niter(0),
         m_fac(ArnoldiOpType(m_op, Bop), m_ncv),
-        m_info(CompInfo::NotComputed)
+        m_info(CompInfo::NotComputed),
+        display(display)
     {
         if (nev < 1 || nev > m_n - 1)
             throw std::invalid_argument("nev must satisfy 1 <= nev <= n - 1, n is the size of matrix");
@@ -346,18 +353,24 @@ public:
                   Scalar tol = 1e-10, SortRule sorting = SortRule::LargestAlge)
     {
         // The m-step Lanczos factorization
-        std::cout << "Begin factorize_from" << std::endl;
+        if (display)
+            std::cout << "Begin factorize_from" << std::endl;
+
+        Output out(display);
         m_fac.factorize_from(1, m_ncv, m_nmatop);
 
-        std::cout << "Begin retrieve_ritzpair" << std::endl;
+        if (display)
+            std::cout << "Begin retrieve_ritzpair" << std::endl;
         retrieve_ritzpair(selection);
 
         // Restarting
-        std::cout << "Begin restarting" << std::endl;
+        if (display)
+            std::cout << "Begin restarting" << std::endl;
         Index i, nconv = 0, nev_adj;
         for (i = 0; i < maxit; i++)
         {
-            std::cout << i << "th iteration" << std::endl;
+            if (display)
+                std::cout << i << "th iteration" << std::endl;
             nconv = num_converged(tol);
             if (nconv >= m_nev)
                 break;
@@ -367,15 +380,17 @@ public:
         }
 
         // Sorting results
-        std::cout << "Begin sort_ritzpair" << std::endl;
+        if (display)
+            std::cout << "Begin sort_ritzpair" << std::endl;
         sort_ritzpair(sorting);
 
         m_niter += i + 1;
         m_info = (nconv >= m_nev) ? CompInfo::Successful : CompInfo::NotConverging;
 
-        std::cout << "Finished. " << (std::min)(m_nev, nconv) << " eigenvalues converged after "
-                  << m_niter << " iterations.\n"
-                  << std::endl;
+        if (display)
+            std::cout << "Finished. " << (std::min)(m_nev, nconv) << " eigenvalues converged after "
+                      << m_niter << " iterations.\n"
+                      << std::endl;
 
         return (std::min)(m_nev, nconv);
     }
@@ -442,8 +457,11 @@ public:
         if (!nvec)
             return res;
 
-        std::cout << "Computing `ritz_vec_conv`" << std::endl;
-        boost::timer::progress_display progress(nvec);
+        if (display)
+            std::cout << "Computing `ritz_vec_conv`" << std::endl;
+
+        Output out(display);
+        boost::timer::progress_display progress(nvec, out);
         Matrix ritz_vec_conv(m_ncv, nvec);
         Index j = 0;
         for (Index i = 0; i < m_nev && j < nvec; i++)
@@ -456,7 +474,8 @@ public:
             }
         }
 
-        std::cout << "Multiplying `V` and `ritz_vec_conv`" << std::endl;
+        if (display)
+            std::cout << "Multiplying `V` and `ritz_vec_conv`" << std::endl;
         res.noalias() = m_fac.matrix_V() * ritz_vec_conv;
 
         return res;

@@ -18,6 +18,24 @@
 
 namespace Spectra {
 
+struct Output : std::ostream, std::streambuf
+{
+    Output(bool enabled) :
+        std::ostream(this), m_enabled(enabled) {}
+
+    int overflow(int c)
+    {
+        if (m_enabled)
+        {
+            std::cout.put(c);
+            std::cout.flush();
+        }
+        return 0;
+    }
+
+    bool m_enabled;
+};
+
 // Lanczos factorization A * V = V * H + f * e'
 // A: n x n
 // V: n x k
@@ -48,10 +66,12 @@ private:
     using Arnoldi<Scalar, ArnoldiOpType>::m_eps;
 
 public:
+    bool display;
+
     // Forward parameter `op` to the constructor of Arnoldi
     template <typename T>
-    Lanczos(T&& op, Index m) :
-        Arnoldi<Scalar, ArnoldiOpType>(std::forward<T>(op), m)
+    Lanczos(T&& op, Index m, bool display) :
+        Arnoldi<Scalar, ArnoldiOpType>(std::forward<T>(op), m), display(display)
     {}
 
     // Lanczos factorization starting from step-k
@@ -79,7 +99,8 @@ public:
         m_fac_H.rightCols(m_m - from_k).setZero();
         m_fac_H.block(from_k, 0, m_m - from_k, from_k).setZero();
 
-        boost::timer::progress_display progress(to_m - from_k);
+        Output out(display);
+        boost::timer::progress_display progress(to_m - from_k, out);
 
         for (Index i = from_k; i <= to_m - 1; i++)
         {

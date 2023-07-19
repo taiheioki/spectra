@@ -112,13 +112,15 @@ public:
         m_n(0), m_computed(false)
     {}
 
-    TridiagEigen(ConstGenericMatrix& mat) :
+    template <class O>
+    TridiagEigen(ConstGenericMatrix& mat, O& out) :
         m_n(mat.rows()), m_computed(false)
     {
-        compute(mat);
+        compute(mat, out);
     }
 
-    void compute(ConstGenericMatrix& mat)
+    template <class O>
+    void compute(ConstGenericMatrix& mat, O& out)
     {
         using std::abs;
 
@@ -162,7 +164,7 @@ public:
         const Scalar considerAsZero = TypeTraits<Scalar>::min();
         const Scalar precision_inv = Scalar(1) / Eigen::NumTraits<Scalar>::epsilon();
 
-        boost::timer::progress_display progress(end);
+        boost::timer::progress_display progress(end, out);
 
         while (end > 0)
         {
@@ -181,7 +183,8 @@ public:
             }
 
             // find the largest unreduced block at the end of the matrix.
-            while (end > 0 && subdiag[end - 1] == Scalar(0)){
+            while (end > 0 && subdiag[end - 1] == Scalar(0))
+            {
                 end--;
                 ++progress;
             }

@@ -154,8 +154,8 @@ public:
     ///             in each iteration. This parameter must satisfy \f$nev < ncv \le n\f$,
     ///             and is advised to take \f$ncv \ge 2\cdot nev\f$.
     ///
-    SymEigsSolver(OpType& op, Index nev, Index ncv) :
-        SymEigsBase<OpType, IdentityBOp>(op, IdentityBOp(), nev, ncv)
+    SymEigsSolver(OpType& op, Index nev, Index ncv, bool display) :
+        SymEigsBase<OpType, IdentityBOp>(op, IdentityBOp(), nev, ncv, display)
     {}
 };
 
